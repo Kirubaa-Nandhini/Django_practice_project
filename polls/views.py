@@ -5,12 +5,12 @@ from django.db.models import F
 from  django.urls import reverse
 from django.template import loader
 from django.views import generic
-
-def index(request):
-     latest_questions=Question.objects.order_by("-pub_date")[:5]
-     template=loader.get_template("polls/index.html")
-     context={"latest_question_list": latest_questions}
-     return HttpResponse(template.render(context,request))
+from django.utils import timezone
+class IndexView(generic.ListView):
+     template_name="polls/index.html"
+     context_object_name="latest_question_list"
+     def get_queryset(self):
+          return Question.objects.filter(pub_date_lte=timezone.now()).order_by("-pub_date")[:5]
      
 def detail(request,question_id):
     try:
